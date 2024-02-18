@@ -8,7 +8,7 @@ import { CreateSportDto } from './dto/createSport.dto'
 import { Multer } from 'multer'
 import { RoleHelper } from '../helpers/role.helper'
 import { UserRoleEnum } from '../auth/enum/userRoles.enum'
-import { PaginationHelper } from 'src/helpers/pagination.helper'
+import { PaginationHelper } from '../helpers/pagination.helper'
 
 @Injectable()
 export class SportService {

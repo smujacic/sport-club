@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNumber } from 'class-validator'
 import { DayOfWeek } from '../enum/dayOfWeek.enum'
-import { SportClassEntity } from 'src/sport-class/entity/sportClass.entity'
+import { SportClassEntity } from '../../sport-class/entity/sportClass.entity'
 
 export class CreateScheduleDto {
   @ApiProperty({

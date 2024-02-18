@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { UserRoleEntity } from './userRole.entity'
 import { UserMetaEntity } from './userMeta.entity'
-import { SportClassEntity } from 'src/sport-class/entity/sportClass.entity'
+import { SportClassEntity } from '../../sport-class/entity/sportClass.entity'
 
 @Entity('user')
 export class UserEntity {

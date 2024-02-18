@@ -1,7 +1,7 @@
-import { SportEntity } from 'src/sport/entity/sport.entity'
+import { SportEntity } from '../../sport/entity/sport.entity'
 import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { ScheduleEntity } from '../../schedule/entity/schedule.entity'
-import { UserEntity } from 'src/user/entity/user.entity'
+import { UserEntity } from '../../user/entity/user.entity'
 
 @Entity('sport-class')
 export class SportClassEntity {
