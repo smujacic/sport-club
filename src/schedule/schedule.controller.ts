@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -17,6 +19,7 @@ import { LoggedInUserInterface } from 'src/auth/interface/loggedinUser.interface
 import { LoggedInUser } from '../auth/user.decorator'
 import { CreateScheduleDto } from './dto/createSchedule.dto'
 import { ScheduleEntity } from './entity/schedule.entity'
+import { UpdateScheduleDto } from './dto/updateSchadule.dto'
 
 @Controller('schedule')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -83,5 +86,33 @@ export class ScheduleController {
     }
 
     return schedule
+  }
+
+  @Patch('/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Update schedule',
+    tags: ['Schedule'],
+  })
+  async updateSchedule(
+    @LoggedInUser() user: LoggedInUserInterface,
+    @Param('id') id: string,
+    @Body() schedulePayload: UpdateScheduleDto,
+  ): Promise<ScheduleEntity> {
+    const schedule: ScheduleEntity = await this.scheduleService.updateSchedule(user, id, schedulePayload)
+
+    return schedule
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Delete schedule',
+    tags: ['Schedule'],
+  })
+  async deleteSchedule(@LoggedInUser() user: LoggedInUserInterface, @Param('id') id: string): Promise<void> {
+    return await this.scheduleService.deleteSchedule(user, id)
   }
 }

@@ -69,7 +69,7 @@ export class UserController {
     summary: 'Delete user',
     tags: ['Users'],
   })
-  async deleteUser(@LoggedInUser() user: LoggedInUserInterface, @Param('id') id: string) {
+  async deleteUser(@LoggedInUser() user: LoggedInUserInterface, @Param('id') id: string): Promise<void> {
     return this.usersService.deleteUser(user, id)
   }
 
@@ -90,6 +90,7 @@ export class UserController {
           address: '',
           oib: '',
           role: 'member',
+          lastMembershipFee: '2024-01-01',
         },
       },
     },

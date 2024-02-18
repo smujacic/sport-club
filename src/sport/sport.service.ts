@@ -25,7 +25,11 @@ export class SportService {
    * @param sportPayload
    * @param image
    */
-  async createSport(user: LoggedInUserInterface, sportPayload: CreateSportDto, image: Multer.File): Promise<void> {
+  async createSport(
+    user: LoggedInUserInterface,
+    sportPayload: CreateSportDto,
+    image: Multer.File,
+  ): Promise<SportEntity> {
     this.roleHelper.checkAdmin(user?.role as UserRoleEnum)
 
     let savedImageData: ImageEntity = null
@@ -44,7 +48,7 @@ export class SportService {
       description,
       image: savedImageData ? savedImageData : null,
     })
-    await this.sportRepository.save(sport)
+    return await this.sportRepository.save(sport)
   }
 
   /**
@@ -52,7 +56,7 @@ export class SportService {
    * @param search
    * @returns
    */
-  async getSports(search?: string | null, page = 1, size = 10): Promise<SportEntity[]> {
+  async getSports(search?: string | null, page: number = 1, size: number = 10): Promise<SportEntity[]> {
     if (search) {
       const searchTerms = search.split(',').map((term) => term.trim())
 
@@ -86,11 +90,11 @@ export class SportService {
     this.roleHelper.checkAdmin(user?.role as UserRoleEnum)
 
     try {
-      const image: ImageEntity = await this.imageRepository.findOneBy({ sport: { id } })
-      await this.imageRepository.remove(image)
-
       const sport: SportEntity = await this.getSport(id)
       await this.sportRepository.remove(sport)
+
+      const image: ImageEntity = await this.imageRepository.findOneBy({ sport: { id } })
+      if (image) await this.imageRepository.remove(image)
 
       return
     } catch (error) {

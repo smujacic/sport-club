@@ -87,8 +87,8 @@ export class UserService {
    * @param user
    * @param createUserPayload
    */
-  async createUser(user: LoggedInUserInterface, createUserPayload: CreateUserDto): Promise<void> {
-    this.roleHelper.checkAdmin(user.role as UserRoleEnum)
+  async createUser(user: LoggedInUserInterface, createUserPayload: CreateUserDto): Promise<UserEntity> {
+    this.roleHelper.checkAdmin(user?.role as UserRoleEnum)
 
     try {
       const { email, firstname, role, lastname, password, address, oib } = createUserPayload
@@ -117,7 +117,7 @@ export class UserService {
         meta: savedUserMeta,
       })
 
-      await this.userRepository.save(userEntity)
+      return await this.userRepository.save(userEntity)
     } catch (error) {
       throw new InternalServerErrorException(error.message || error)
     }
@@ -138,7 +138,7 @@ export class UserService {
       })
 
       if (user && (await bcrypt.compare(password, user.password))) {
-        const payload = { email, role: user.roleName, id: user.id }
+        const payload = { email, role: UserRoleEnum[user?.roleName?.toLocaleUpperCase()], id: user?.id }
         const accessToken: string = this.jwtService.sign(payload, {
           expiresIn: this.configService.get('JWT_TOKEN_EXPIRES'),
           secret: this.configService.get('JWT_SECRET'),
@@ -160,7 +160,7 @@ export class UserService {
    * @returns
    */
   async getUser(user: LoggedInUserInterface, id: string): Promise<UserEntity> {
-    if (user.id !== id) this.roleHelper.checkAdmin(user.role as UserRoleEnum)
+    if (user?.id !== id) this.roleHelper.checkAdmin(user?.role as UserRoleEnum)
 
     try {
       const userData: UserEntity = await this.userRepository.findOneBy({ id })
@@ -169,6 +169,8 @@ export class UserService {
 
       return userData
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
       throw new InternalServerErrorException(error.message || error)
     }
   }
@@ -179,7 +181,7 @@ export class UserService {
    * @returns
    */
   async getUsers(user: LoggedInUserInterface, page = 1, size = 10): Promise<UserEntity[]> {
-    this.roleHelper.checkAdmin(user.role as UserRoleEnum)
+    this.roleHelper.checkAdmin(user?.role as UserRoleEnum)
 
     try {
       const usersData: UserEntity[] = await this.userRepository.find(this.paginationHelper.pagination(page, size))
@@ -188,6 +190,8 @@ export class UserService {
 
       return usersData
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
       throw new InternalServerErrorException(error.message || error)
     }
   }
@@ -223,7 +227,7 @@ export class UserService {
     try {
       const userData = await this.getUser(user, id)
 
-      const { firstname, role, lastname, password, address, oib } = updateUserPayload
+      const { firstname, role, lastname, password, address, oib, lastMembershipFee } = updateUserPayload
 
       let hashedPassword = userData.password
       if (password) {
@@ -232,16 +236,19 @@ export class UserService {
         userData.password = hashedPassword
       }
 
-      const roleName = role ? UserRoleEnum[role] : UserRoleEnum[userData.roleName]
+      const roleName = role
+        ? UserRoleEnum[role?.toLocaleUpperCase()]
+        : UserRoleEnum[userData?.roleName?.toLocaleUpperCase()]
       const getRole: UserRoleEntity = await this.userRoleRepository.findOneBy({ name: roleName })
       userData.role = getRole
 
       const userMeta = await this.userMetaRepository.findOneBy({ user: { id } })
       if (userMeta) {
-        userMeta.firstname = firstname ?? userData.meta.firstname
-        userMeta.lastname = lastname ?? userData.meta.lastname
-        userMeta.address = address ?? userData.meta.address
-        userMeta.oib = oib ?? userData.meta.oib
+        userMeta.firstname = firstname ?? userData?.meta?.firstname
+        userMeta.lastname = lastname ?? userData?.meta?.lastname
+        userMeta.address = address ?? userData?.meta?.address
+        userMeta.oib = oib ?? userData?.meta?.oib
+        userMeta.lastMembershipFee = new Date(lastMembershipFee ?? userData?.meta?.lastMembershipFee)
 
         await this.userMetaRepository.save(userMeta)
       }
@@ -261,11 +268,11 @@ export class UserService {
    */
   async deleteUser(user: LoggedInUserInterface, id: string): Promise<void> {
     try {
-      const userMeta: UserMetaEntity = await this.userMetaRepository.findOneBy({ user: { id: id } })
-      await this.userMetaRepository.remove(userMeta)
-
       const userData: UserEntity = await this.getUser(user, id)
       await this.userRepository.remove(userData)
+
+      const userMeta: UserMetaEntity = await this.userMetaRepository.findOneBy({ user: { id: id } })
+      if (userMeta) await this.userMetaRepository.remove(userMeta)
 
       return
     } catch (error) {

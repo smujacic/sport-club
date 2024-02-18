@@ -47,11 +47,21 @@ export class SportClassService {
   async getSportClasses(id?: string | null, page = 1, size = 10): Promise<SportClassEntity | SportClassEntity[]> {
     try {
       if (id) {
-        return await this.sportClassRepository.findOneBy({ id })
+        const sportClass: SportClassEntity = await this.sportClassRepository.findOneBy({ id })
+        if (!sportClass) throw new NotFoundException()
+
+        return sportClass
       }
 
-      return await this.sportClassRepository.find(this.paginationHelper.pagination(page, size))
+      const sportClasses: SportClassEntity[] = await this.sportClassRepository.find(
+        this.paginationHelper.pagination(page, size),
+      )
+      if (sportClasses.length === 0) throw new NotFoundException()
+
+      return sportClasses
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
       throw new InternalServerErrorException(error.message || error)
     }
   }
@@ -74,6 +84,8 @@ export class SportClassService {
 
       return
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
       throw new InternalServerErrorException(error.message || error)
     }
   }
@@ -106,6 +118,8 @@ export class SportClassService {
 
       return await this.sportClassRepository.save(sportClass)
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
       throw new InternalServerErrorException(error.message || error)
     }
   }
@@ -138,6 +152,43 @@ export class SportClassService {
 
       return await this.sportClassRepository.save(sportClass)
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
+      throw new InternalServerErrorException(error.message || error)
+    }
+  }
+
+  /**
+   *
+   * @param user
+   * @param userId
+   * @param sportClassId
+   * @returns
+   */
+  async removeUserFromSportClass(
+    user: LoggedInUserInterface,
+    userId: string,
+    sportClassId: string,
+  ): Promise<SportClassEntity> {
+    this.roleHelper.checkAdmin(user?.role as UserRoleEnum)
+    console.log({ sportClassId })
+    try {
+      const sportClass = await this.sportClassRepository.findOneBy({ id: sportClassId })
+
+      if (!sportClass) {
+        throw new NotFoundException('User or sport class not found')
+      }
+
+      if (!sportClass.users) {
+        sportClass.users = []
+      } else {
+        sportClass.users = sportClass.users.filter((user) => user.id !== userId)
+      }
+
+      return await this.sportClassRepository.save(sportClass)
+    } catch (error) {
+      if (error.status === 404) throw new NotFoundException()
+
       throw new InternalServerErrorException(error.message || error)
     }
   }

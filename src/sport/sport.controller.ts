@@ -13,7 +13,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common'
 import { SportService } from './sport.service'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger'
 import { CreateSportDto } from './dto/createSport.dto'
 import { LoggedInUser } from '../auth/user.decorator'
 import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
@@ -51,8 +51,8 @@ export class SportController {
   async createSport(
     @LoggedInUser() user: LoggedInUserInterface,
     @Body() sportPayload: CreateSportDto,
-    @UploadedFile() image: Multer.File,
-  ): Promise<void> {
+    @UploadedFile() image?: Multer.File,
+  ): Promise<SportEntity> {
     return await this.sportService.createSport(user, sportPayload, image)
   }
 
@@ -66,10 +66,16 @@ export class SportController {
     required: false,
     description: 'Optional search string for filtering sports',
   })
-  async getSports(@Query('search') search: string = ''): Promise<SportEntity[]> {
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'size', required: false, type: Number })
+  async getSports(
+    @Query('search') search: string = '',
+    @Query('page') page?: number,
+    @Query('size') size?: number,
+  ): Promise<SportEntity[]> {
     if (search === ',') search = null
 
-    return await this.sportService.getSports(search)
+    return await this.sportService.getSports(search, page ? page : 1, size ? size : 10)
   }
 
   @Get('/:id')
@@ -78,7 +84,7 @@ export class SportController {
     tags: ['Sport'],
   })
   async getSport(@Param('id') id: string): Promise<SportEntity> {
-    return this.sportService.getSport(id)
+    return await this.sportService.getSport(id)
   }
 
   @Delete('/:id')
@@ -89,6 +95,6 @@ export class SportController {
     tags: ['Sport'],
   })
   async deleteSport(@LoggedInUser() user: LoggedInUserInterface, @Param('id') id: string): Promise<void> {
-    return this.sportService.deleteSport(user, id)
+    return await this.sportService.deleteSport(user, id)
   }
 }

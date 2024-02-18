@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUUID, Matches, MaxLength, MinLength } from 'class-validator'
+import { IsDate, IsEnum, IsOptional, IsString, IsUUID, Matches, MaxLength, MinLength } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { UserRoleEnum } from '../../auth/enum/userRoles.enum'
 
@@ -65,4 +65,12 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   oib?: string
+
+  @ApiProperty({
+    description: `Date of last paied mambership fee`,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  lastMembershipFee: string
 }
