@@ -13,7 +13,7 @@ import { JwtService } from '@nestjs/jwt'
 import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
 import { UpdateUserDto } from './dto/updateUser.dto'
 import { RoleHelper } from '../helpers/role.helper'
-import { PaginationHelper } from 'src/helpers/pagination.helper'
+import { PaginationHelper } from '../helpers/pagination.helper'
 
 @Injectable()
 export class UserService {

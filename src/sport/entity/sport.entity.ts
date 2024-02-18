@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { ImageEntity } from './image.entity'
-import { SportClassEntity } from 'src/sport-class/entity/sportClass.entity'
+import { SportClassEntity } from '../../sport-class/entity/sportClass.entity'
 
 @Entity('sport')
 export class SportEntity {

@@ -1,15 +1,15 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { SportClassEntity } from './entity/sportClass.entity'
-import { LoggedInUserInterface } from 'src/auth/interface/loggedinUser.interface'
+import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
 import { CreateSportClassDto } from './dto/createSportClass.dto'
-import { RoleHelper } from 'src/helpers/role.helper'
-import { UserRoleEnum } from 'src/auth/enum/userRoles.enum'
-import { SportEntity } from 'src/sport/entity/sport.entity'
+import { RoleHelper } from '../helpers/role.helper'
+import { UserRoleEnum } from '../auth/enum/userRoles.enum'
+import { SportEntity } from '../sport/entity/sport.entity'
 import { UpdateSportClassDto } from './dto/updateSportClass.dto'
-import { PaginationHelper } from 'src/helpers/pagination.helper'
-import { UserEntity } from 'src/user/entity/user.entity'
+import { PaginationHelper } from '../helpers/pagination.helper'
+import { UserEntity } from '../user/entity/user.entity'
 
 @Injectable()
 export class SportClassService {

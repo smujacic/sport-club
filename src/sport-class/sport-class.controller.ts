@@ -13,13 +13,13 @@ import {
 } from '@nestjs/common'
 import { SportClassService } from './sport-class.service'
 import { CreateSportClassDto } from './dto/createSportClass.dto'
-import { LoggedInUserInterface } from 'src/auth/interface/loggedinUser.interface'
-import { LoggedInUser } from 'src/auth/user.decorator'
+import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
+import { LoggedInUser } from '../auth/user.decorator'
 import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger'
-import { JwtAuthGuard } from 'src/auth/jwt-aut.guards'
+import { JwtAuthGuard } from '../auth/jwt-aut.guards'
 import { SportClassEntity } from './entity/sportClass.entity'
 import { UpdateSportClassDto } from './dto/updateSportClass.dto'
-import { UserEntity } from 'src/user/entity/user.entity'
+import { UserEntity } from '../user/entity/user.entity'
 
 @Controller('sport-class')
 @UsePipes(new ValidationPipe({ transform: true }))

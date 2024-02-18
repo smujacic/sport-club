@@ -3,10 +3,10 @@ import { ScheduleEntity } from './entity/schedule.entity'
 import { Repository } from 'typeorm'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { CreateScheduleDto } from './dto/createSchedule.dto'
-import { LoggedInUserInterface } from 'src/auth/interface/loggedinUser.interface'
-import { RoleHelper } from 'src/helpers/role.helper'
-import { UserRoleEnum } from 'src/auth/enum/userRoles.enum'
-import { PaginationHelper } from 'src/helpers/pagination.helper'
+import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
+import { RoleHelper } from '../helpers/role.helper'
+import { UserRoleEnum } from '../auth/enum/userRoles.enum'
+import { PaginationHelper } from '../helpers/pagination.helper'
 
 @Injectable()
 export class ScheduleService {

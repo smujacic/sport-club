@@ -7,7 +7,7 @@ import { UserRoleEntity } from '../user/entity/userRole.entity'
 import { UserMetaEntity } from '../user/entity/userMeta.entity'
 import { JwtService } from '@nestjs/jwt'
 import { RoleHelper } from '../helpers/role.helper'
-import { PaginationHelper } from 'src/helpers/pagination.helper'
+import { PaginationHelper } from '../helpers/pagination.helper'
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, UserRoleEntity, UserMetaEntity])],
