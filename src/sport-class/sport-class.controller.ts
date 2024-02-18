@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -15,7 +16,7 @@ import { SportClassService } from './sport-class.service'
 import { CreateSportClassDto } from './dto/createSportClass.dto'
 import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
 import { LoggedInUser } from '../auth/user.decorator'
-import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../auth/jwt-aut.guards'
 import { SportClassEntity } from './entity/sportClass.entity'
 import { UpdateSportClassDto } from './dto/updateSportClass.dto'
@@ -61,8 +62,10 @@ export class SportClassController {
     summary: 'Get all sport classes',
     tags: ['Sport class'],
   })
-  async getSportClasses(): Promise<SportClassEntity[]> {
-    const sportClass = await this.sportClassService.getSportClasses()
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'size', required: false, type: Number })
+  async getSportClasses(@Query('page') page?: number, @Query('size') size?: number): Promise<SportClassEntity[]> {
+    const sportClass = await this.sportClassService.getSportClasses(null, page ? page : 1, size ? size : 10)
 
     if (!Array.isArray(sportClass)) {
       throw new NotFoundException('Sport classes not found')
@@ -137,6 +140,33 @@ export class SportClassController {
     const { userId, sportClassId } = payload
 
     return await this.sportClassService.subscribeUserToSportClass(user, userId, sportClassId)
+  }
+
+  @Patch('/sport-class-user/remove')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Unsubscribe user from sport class',
+    tags: ['Sport class'],
+  })
+  @ApiBody({
+    examples: {
+      subscribeUser: {
+        value: {
+          userId: '',
+          sportClassId: '',
+        },
+      },
+    },
+    type: 'object',
+  })
+  async removeUserFromSportClass(
+    @LoggedInUser() user: LoggedInUserInterface,
+    @Body() payload: { userId: string; sportClassId: string },
+  ): Promise<SportClassEntity> {
+    const { userId, sportClassId } = payload
+
+    return await this.sportClassService.removeUserFromSportClass(user, userId, sportClassId)
   }
 
   @Get('/sport-class-subscribers/:id')

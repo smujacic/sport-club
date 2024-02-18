@@ -4,9 +4,6 @@ export class Schedule1708250863824 implements MigrationInterface {
   name = 'Schedule1708250863824'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `CREATE TYPE schedule_dayofweek_enum AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY','THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY')`,
-    )
     await queryRunner.query(`ALTER TABLE "sport-class" RENAME COLUMN "duration" TO "scheduleId"`)
     await queryRunner.query(
       `CREATE TABLE "schedule" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "duration" integer, "dayOfWeek" "public"."schedule_dayofweek_enum" NOT NULL, CONSTRAINT "PK_1c05e42aec7371641193e180046" PRIMARY KEY ("id"))`,

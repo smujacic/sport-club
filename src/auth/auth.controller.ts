@@ -6,6 +6,8 @@ import { LoggedInUser } from './user.decorator'
 import { JwtAuthGuard } from './jwt-aut.guards'
 import { AuthCredentialsDto } from './dto/authCradentials.dto'
 import { UserResponse } from './swagger/userResponse'
+import { LoggedInUserInterface } from './interface/loggedinUser.interface'
+import { UserEntity } from 'src/user/entity/user.entity'
 
 @Controller('auth')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -37,10 +39,10 @@ export class AuthController {
   })
   @ApiBadRequestResponse(UserResponse.badRequest)
   async signeUp(
-    @LoggedInUser() author: { id: string; email: string; role: string },
+    @LoggedInUser() user: LoggedInUserInterface,
     @Body() createUserPayload: CreateUserDto,
-  ): Promise<void> {
-    return this.usersService.createUser(author, createUserPayload)
+  ): Promise<UserEntity> {
+    return await this.usersService.createUser(user, createUserPayload)
   }
 
   @Post('/signin')
@@ -63,6 +65,6 @@ export class AuthController {
     schema: { type: 'object', properties: { accessToken: { type: 'string' } } },
   })
   async signIn(@Body() authCredentialsPayload: AuthCredentialsDto): Promise<{ accessToken: string }> {
-    return this.usersService.signIn(authCredentialsPayload)
+    return await this.usersService.signIn(authCredentialsPayload)
   }
 }
