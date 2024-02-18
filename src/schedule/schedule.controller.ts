@@ -11,10 +11,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common'
 import { ScheduleService } from './schedule.service'
-import { JwtAuthGuard } from 'src/auth/jwt-aut.guards'
+import { JwtAuthGuard } from '../auth/jwt-aut.guards'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger'
 import { LoggedInUserInterface } from 'src/auth/interface/loggedinUser.interface'
-import { LoggedInUser } from 'src/auth/user.decorator'
+import { LoggedInUser } from '../auth/user.decorator'
 import { CreateScheduleDto } from './dto/createSchedule.dto'
 import { ScheduleEntity } from './entity/schedule.entity'
 
