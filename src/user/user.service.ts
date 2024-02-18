@@ -12,6 +12,8 @@ import { AuthCredentialsDto } from '../auth/dto/authCradentials.dto'
 import { JwtService } from '@nestjs/jwt'
 import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
 import { UpdateUserDto } from './dto/updateUser.dto'
+import { RoleHelper } from '../helpers/role.helper'
+import { PaginationHelper } from 'src/helpers/pagination.helper'
 
 @Injectable()
 export class UserService {
@@ -23,6 +25,8 @@ export class UserService {
     @InjectRepository(UserMetaEntity) private readonly userMetaRepository: Repository<UserMetaEntity>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly roleHelper: RoleHelper,
+    private readonly paginationHelper: PaginationHelper,
   ) {}
 
   /**
@@ -84,7 +88,7 @@ export class UserService {
    * @param createUserPayload
    */
   async createUser(user: LoggedInUserInterface, createUserPayload: CreateUserDto): Promise<void> {
-    this.checkAdmin(user.role as UserRoleEnum)
+    this.roleHelper.checkAdmin(user.role as UserRoleEnum)
 
     try {
       const { email, firstname, role, lastname, password, address, oib } = createUserPayload
@@ -156,7 +160,7 @@ export class UserService {
    * @returns
    */
   async getUser(user: LoggedInUserInterface, id: string): Promise<UserEntity> {
-    if (user.id !== id) this.checkAdmin(user.role as UserRoleEnum)
+    if (user.id !== id) this.roleHelper.checkAdmin(user.role as UserRoleEnum)
 
     try {
       const userData: UserEntity = await this.userRepository.findOneBy({ id })
@@ -174,11 +178,11 @@ export class UserService {
    * @param user
    * @returns
    */
-  async getUsers(user: LoggedInUserInterface): Promise<UserEntity[]> {
-    this.checkAdmin(user.role as UserRoleEnum)
+  async getUsers(user: LoggedInUserInterface, page = 1, size = 10): Promise<UserEntity[]> {
+    this.roleHelper.checkAdmin(user.role as UserRoleEnum)
 
     try {
-      const usersData: UserEntity[] = await this.userRepository.find()
+      const usersData: UserEntity[] = await this.userRepository.find(this.paginationHelper.pagination(page, size))
 
       if (!usersData) throw new NotFoundException()
 
@@ -267,16 +271,5 @@ export class UserService {
     } catch (error) {
       throw new InternalServerErrorException(error.message || error)
     }
-  }
-
-  /**
-   *
-   * @param role
-   * @returns
-   */
-  private checkAdmin(role: UserRoleEnum): boolean {
-    if (![UserRoleEnum.ADMIN, UserRoleEnum.SUPERADMIN].includes(role)) throw new UnauthorizedException()
-
-    return true
   }
 }

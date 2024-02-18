@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { UserRoleEntity } from './userRole.entity'
 import { UserMetaEntity } from './userMeta.entity'
+import { SportClassEntity } from 'src/sport-class/entity/sportClass.entity'
 
 @Entity('user')
 export class UserEntity {
@@ -21,6 +22,10 @@ export class UserEntity {
 
   @OneToOne(() => UserMetaEntity, (userMeta) => userMeta.user, { eager: true })
   meta: UserMetaEntity
+
+  @ManyToMany(() => SportClassEntity, (sportClass) => sportClass.users)
+  @JoinTable({ name: 'user_sport_class' })
+  sportClasses: SportClassEntity[]
 
   toJSON(): Omit<UserEntity, 'password' | 'roleName' | 'toJSON'> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

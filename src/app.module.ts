@@ -7,6 +7,9 @@ import { DatabaseConfig } from './configuration'
 import { UserService } from './user/user.service'
 import { UserController } from './user/user.controller'
 import { UserModule } from './user/user.module'
+import { SportModule } from './sport/sport.module'
+import { SportClassModule } from './sport-class/sport-class.module'
+import { ScheduleModule } from './schedule/schedule.module'
 
 @Module({
   imports: [
@@ -24,8 +27,12 @@ import { UserModule } from './user/user.module'
     }),
     AuthModule,
     UserModule,
+    SportModule,
+    SportClassModule,
+    ScheduleModule,
   ],
   controllers: [UserController],
+  providers: [],
 })
 export class AppModule implements OnApplicationBootstrap, NestModule {
   constructor(private readonly usersService: UserService) {}

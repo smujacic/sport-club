@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { UserService } from './user.service'
-import { JwtAuthGuard } from 'src/auth/jwt-aut.guards'
+import { JwtAuthGuard } from '../auth/jwt-aut.guards'
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger'
-import { AuthCredentialsDto } from 'src/auth/dto/authCradentials.dto'
-import { LoggedInUser } from 'src/auth/user.decorator'
-import { LoggedInUserInterface } from 'src/auth/interface/loggedinUser.interface'
-import { UserResponse } from 'src/auth/swagger/userResponse'
+import { AuthCredentialsDto } from '../auth/dto/authCradentials.dto'
+import { LoggedInUser } from '../auth/user.decorator'
+import { LoggedInUserInterface } from '../auth/interface/loggedinUser.interface'
+import { UserResponse } from '../auth/swagger/userResponse'
 import { UpdateUserDto } from './dto/updateUser.dto'
 import { UserEntity } from './entity/user.entity'
 
@@ -29,7 +29,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Get user data',
+    summary: 'Get users data',
     tags: ['Users'],
   })
   async getUsers(@LoggedInUser() user: LoggedInUserInterface): Promise<UserEntity[]> {
@@ -45,7 +45,7 @@ export class UserController {
   })
   @ApiBody({
     examples: {
-      createUser: {
+      updateUserStatus: {
         value: {
           status: false,
         },
@@ -82,7 +82,7 @@ export class UserController {
   })
   @ApiBody({
     examples: {
-      createUser: {
+      updateUser: {
         value: {
           firstname: 'Jon',
           lastname: '',
