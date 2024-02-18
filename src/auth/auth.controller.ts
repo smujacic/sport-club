@@ -50,7 +50,7 @@ export class AuthController {
   })
   @ApiBody({
     examples: {
-      createUser: {
+      userLogin: {
         value: {
           email: 'example@example.org',
           password: 'A0B1C2D!',
