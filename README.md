@@ -28,6 +28,10 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
+## Super admin credentials
+email: super@example.com \
+password: Admin2023
+
 ## Running tests
 
 ```bash
